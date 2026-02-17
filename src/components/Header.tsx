@@ -1,7 +1,14 @@
 import { AppBar, Toolbar, Typography, Box, Button, Container } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
-const navItems = ['About', 'Team', 'Research', 'News', 'Resources', 'Outreach', 'Features', 'Calendar', 'Join us'];
+const navLinks = [
+  { name: 'Home', path: '/' },
+  { name: 'News', path: '/news' },
+  { name: 'Pricing', path: '/pricing' },
+  { name: 'Docs', path: '/docs' },
+  { name: 'Calendar', path: '/calendar' },
+];
 
 export default function Header() {
   return (
@@ -10,25 +17,22 @@ export default function Header() {
         <Toolbar disableGutters sx={{ justifyContent: 'space-between', py: 2 }}>
           {/* Logo Section */}
           <Box component={RouterLink} to="/" sx={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-             {/* SVC Placeholder for the red wave logo */}
-            <Box sx={{ width: 100, height: 40, border: '1px solid #1B5E20', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1, color: '#1B5E20', fontSize: '0.75rem' }}>
-                Logo svg
-            </Box>
+             <Box component="img" src={logo} alt="Effortless Logo" sx={{ height: 40, mb: 1 }} />
             <Typography variant="body2" sx={{ fontWeight: 'bold', letterSpacing: 1, fontSize: '0.7rem', textTransform: 'uppercase' }}>
-              The Center of Gravity
+              Effortless Products
             </Typography>
           </Box>
 
           {/* Navigation Section */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-            {navItems.map((item) => (
+            {navLinks.map((item) => (
               <Button
-                key={item}
+                key={item.name}
                 component={RouterLink}
-                to={`/${item.toLowerCase().replace(' ', '-')}`}
+                to={item.path}
                 sx={{ color: 'text.primary', fontWeight: 600, fontSize: '0.95rem' }}
               >
-                {item}
+                {item.name}
               </Button>
             ))}
              {/* Icon Placeholder */}
