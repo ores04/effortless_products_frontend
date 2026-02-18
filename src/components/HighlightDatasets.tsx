@@ -4,38 +4,38 @@ import DatasetCard from './DatasetCard';
 
 const datasets = [
   {
-    title: 'Global Coffee Beans',
-    description: 'Detailed analysis of coffee bean production, pricing, and origin data globally.',
-    price: '$499',
-    color: '#FFCDD2', // Pastel Red
+    title: 'Edeka Product Catalog',
+    description: 'Comprehensive product list with current shelf prices from major Edeka branches.',
+    price: '€199',
+    color: '#FFF9C4', // Pastel Yellow (Edeka has yellow/blue)
     link: '/pricing',
   },
   {
-    title: 'Organic Produce Trends',
-    description: 'Consumer purchasing trends for organic fruits and vegetables in the EU market.',
-    price: '$299',
-    color: '#C8E6C9', // Pastel Green
+    title: 'Netto Marken-Discount',
+    description: 'Full assortment pricing history for Netto stores across Germany.',
+    price: '€149',
+    color: '#FFCCBC', // Pastel Orange (Netto is yellow/red, close enough)
     link: '/pricing',
   },
   {
-    title: 'Dairy Alternatives',
-    description: 'Market share and growth stats for plant-based milk, cheese, and yogurt.',
-    price: '$349',
-    color: '#BBDEFB', // Pastel Blue
+    title: 'Lidl Weekly Offers',
+    description: 'Track price changes and special weekly offers from Lidl stores.',
+    price: '€149',
+    color: '#BBDEFB', // Pastel Blue (Lidl is blue/yellow/red)
     link: '/pricing',
   },
   {
-    title: 'Snack Food Analytics',
-    description: 'Comprehensive data on snack food consumption patterns and flavor preferences.',
-    price: '$599',
-    color: '#FFF9C4', // Pastel Yellow
-    link: '/pricing',
-  },
-  {
-    title: 'Spices & Herbs Market',
-    description: 'Import/export volumes and pricing fluctuations for major global spices.',
-    price: '$249',
+    title: 'Aldi Nord & Süd',
+    description: 'Combined dataset for Aldi Nord and Süd product pricing and availability.',
+    price: '€179',
     color: '#E1BEE7', // Pastel Purple
+    link: '/pricing',
+  },
+  {
+    title: 'Rewe Market Data',
+    description: 'Detailed shelf pricing and product availability for Rewe supermarkets.',
+    price: '€199',
+    color: '#C8E6C9', // Pastel Green (Rewe is red/white, but green implies fresh/market)
     link: '/pricing',
   },
 ];

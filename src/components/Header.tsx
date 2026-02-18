@@ -1,5 +1,8 @@
-import { AppBar, Toolbar, Typography, Box, Button, Container } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Box, Button, Container, Menu, MenuItem, IconButton } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import logo from '../assets/logo.png';
 
 const navLinks = [
@@ -11,6 +14,24 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    handleClose();
+    await logout();
+    navigate('/');
+  };
+
   return (
     <AppBar position="static" color="transparent" elevation={0}>
       <Container maxWidth="xl">
@@ -39,6 +60,49 @@ export default function Header() {
              <Button sx={{ minWidth: 'auto', p: 0.5 }}>
                 <Box sx={{ width: 20, height: 20, bgcolor: 'text.primary', mask: 'url(https://unpkg.com/simple-icons@v9/icons/lighthouse.svg) no-repeat center / contain', WebkitMask: 'url(https://unpkg.com/simple-icons@v9/icons/lighthouse.svg) no-repeat center / contain' }} />
              </Button>
+
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <Box>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem disabled>{user?.email}</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button component={RouterLink} to="/login" variant="outlined" color="primary" size="small">
+                  Login
+                </Button>
+                <Button component={RouterLink} to="/register" variant="contained" color="primary" size="small">
+                  Sign Up
+                </Button>
+              </Box>
+            )}
           </Box>
         </Toolbar>
       </Container>

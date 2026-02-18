@@ -5,6 +5,8 @@ import NewsPage from './pages/NewsPage';
 import PricingPage from './pages/PricingPage';
 import DocsPage from './pages/DocsPage';
 import CalendarPage from './pages/CalendarPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,14 @@ const router = createBrowserRouter([
       {
         path: 'calendar',
         element: <CalendarPage />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />,
       },
     ],
   },
