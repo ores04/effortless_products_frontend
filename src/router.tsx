@@ -7,6 +7,12 @@ import DocsPage from './pages/DocsPage';
 import CalendarPage from './pages/CalendarPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import DashboardLayout from './layouts/DashboardLayout';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import ApiKeysPage from './pages/dashboard/ApiKeysPage';
+import BillingPage from './pages/dashboard/BillingPage';
+import DatasetsPage from './pages/dashboard/DatasetsPage';
+import StoresPage from './pages/dashboard/StoresPage';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +46,32 @@ const router = createBrowserRouter([
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+    ],
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
+      {
+        path: 'keys',
+        element: <ApiKeysPage />,
+      },
+      {
+        path: 'billing',
+        element: <BillingPage />,
+      },
+      {
+        path: 'datasets',
+        element: <DatasetsPage />,
+      },
+      {
+        path: 'stores',
+        element: <StoresPage />,
       },
     ],
   },

@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       // Error is handled in context and displayed via error state
     }

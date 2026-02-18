@@ -15,6 +15,29 @@ export const endpoints = {
     login: `${API_BASE_URL}${API_PREFIX}/auth/login`,
     register: `${API_BASE_URL}${API_PREFIX}/auth/register`,
     logout: `${API_BASE_URL}${API_PREFIX}/auth/logout`,
+
+    // keys
+    keys: `${API_BASE_URL}${API_PREFIX}/keys`,
+
+    // usage
+    usageSummary: `${API_BASE_URL}${API_PREFIX}/usage/summary`,
+    usageKeys: `${API_BASE_URL}${API_PREFIX}/usage/keys`,
+    usageRecent: `${API_BASE_URL}${API_PREFIX}/usage/recent`,
+
+    // billing
+    billing: `${API_BASE_URL}${API_PREFIX}/billing`,
+    billingCheckout: `${API_BASE_URL}${API_PREFIX}/billing/checkout`,
+    billingPortal: `${API_BASE_URL}${API_PREFIX}/billing/portal`,
+
+    // datasets
+    datasets: `${API_BASE_URL}${API_PREFIX}/datasets`,
+
+    // stores
+    stores: `${API_BASE_URL}${API_PREFIX}/stores`,
+
+    // products (v1)
+    products: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/products`,
+    datasetProducts: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`, // + /:id/products
 };
 
 export const defaultHeaders = {

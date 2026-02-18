@@ -24,7 +24,7 @@ export default function RegisterPage() {
       await register(email, password);
       // Depending on API behavior, we might redirect to login or home if auto-logged in
       // The context implementation assumes auto-login (returns token)
-      navigate('/'); 
+      navigate('/dashboard'); 
     } catch (err) {
       // Error is handled in context
     }
