@@ -1,21 +1,37 @@
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, AppBar, Typography, IconButton, CssBaseline } from '@mui/material';
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, IconButton, CssBaseline, Divider, Chip } from '@mui/material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import KeyIcon from '@mui/icons-material/VpnKey';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import StorageIcon from '@mui/icons-material/Storage';
-import StoreIcon from '@mui/icons-material/Store';
-import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/DashboardOutlined';
+import KeyIcon from '@mui/icons-material/VpnKeyOutlined';
+import CreditCardIcon from '@mui/icons-material/CreditCardOutlined';
+import StorageIcon from '@mui/icons-material/StorageOutlined';
+import StoreIcon from '@mui/icons-material/StorefrontOutlined';
+import LogoutIcon from '@mui/icons-material/LogoutOutlined';
 import { useAuth } from '../context/AuthContext';
 
-const drawerWidth = 240;
+const drawerWidth = 260; // Slightly wider for better spacing
 
-const menuItems = [
-  { text: 'Usage', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'API Keys', icon: <KeyIcon />, path: '/dashboard/keys' },
-  { text: 'Billing', icon: <CreditCardIcon />, path: '/dashboard/billing' },
-  { text: 'Datasets', icon: <StorageIcon />, path: '/dashboard/datasets' },
-  { text: 'Stores', icon: <StoreIcon />, path: '/dashboard/stores' },
+// Grouped menu structure to match the reference image style
+const menuGroups = [
+  {
+    title: null, // Top section, no title
+    items: [
+      { text: 'Home', icon: <DashboardIcon />, path: '/dashboard' },
+      { text: 'API-Schlüssel', icon: <KeyIcon />, path: '/dashboard/keys' },
+    ]
+  },
+  {
+    title: 'Management',
+    items: [
+      { text: 'Datasets', icon: <StorageIcon />, path: '/dashboard/datasets' },
+      { text: 'Stores', icon: <StoreIcon />, path: '/dashboard/stores' },
+    ]
+  },
+  {
+    title: 'Settings',
+    items: [
+      { text: 'Billing', icon: <CreditCardIcon />, path: '/dashboard/billing' },
+    ]
+  }
 ];
 
 export default function DashboardLayout() {
@@ -31,45 +47,121 @@ export default function DashboardLayout() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'background.paper', color: 'text.primary', boxShadow: 1 }}>
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Effortless Products Dashboard
-          </Typography>
-          <IconButton color="inherit" onClick={handleLogout} title="Logout">
-            <LogoutIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      
+      {/* Sidebar */}
       <Drawer
         variant="permanent"
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+          [`& .MuiDrawer-paper`]: { 
+            width: drawerWidth, 
+            boxSizing: 'border-box',
+            borderRight: 'none', // Remove default border
+            bgcolor: '#F5F5F7', // Light grey background like provided image
+            color: '#1A1A1A',
+            p: 2, // Padding around the content
+          },
         }}
       >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {menuItems.map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton 
-                  selected={location.pathname === item.path}
-                  onClick={() => navigate(item.path)}
+        {/* Simple header or logo area if needed, otherwise just spacing */}
+        <Box sx={{ mb: 4, px: 2 }}>
+             {/* Placeholder for logo or brand name if desired, currently empty to match clean style */}
+             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', letterSpacing: 1, opacity: 0.5 }}>
+                 EFFORTLESS
+             </Typography>
+        </Box>
+
+        <Box sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {menuGroups.map((group, index) => (
+            <Box key={index} sx={{ mb: 3 }}>
+              {group.title && (
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    px: 2, 
+                    mb: 1, 
+                    display: 'block', 
+                    color: 'text.secondary',
+                    fontWeight: 500
+                  }}
                 >
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
+                  {group.title}
+                </Typography>
+              )}
+              <List>
+                {group.items.map((item) => {
+                   const isSelected = location.pathname === item.path;
+                   return (
+                    <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                      <ListItemButton 
+                        selected={isSelected}
+                        onClick={() => navigate(item.path)}
+                        sx={{
+                          borderRadius: 2, // Rounded corners
+                          py: 1,
+                          px: 2,
+                          '&.Mui-selected': {
+                            bgcolor: 'rgba(0, 0, 0, 0.05)', // Subtle grey selection
+                            color: 'text.primary',
+                            '&:hover': {
+                              bgcolor: 'rgba(0, 0, 0, 0.08)',
+                            },
+                            '& .MuiListItemIcon-root': {
+                                color: 'text.primary',
+                            }
+                          },
+                          '&:hover': {
+                            bgcolor: 'rgba(0, 0, 0, 0.03)',
+                          },
+                        }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={item.text} 
+                          primaryTypographyProps={{ 
+                            fontSize: '0.95rem', 
+                            fontWeight: isSelected ? 600 : 400 
+                          }} 
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Box>
+          ))}
+
+          {/* User/Footer Section */}
+          <Box sx={{ mt: 'auto', pt: 2 }}>
+             <ListItem disablePadding>
+                <ListItemButton 
+                    onClick={handleLogout}
+                     sx={{
+                          borderRadius: 2,
+                          py: 1,
+                          px: 2,
+                          color: 'text.secondary',
+                          '&:hover': {
+                            bgcolor: 'rgba(0, 0, 0, 0.03)',
+                            color: 'error.main'
+                          },
+                        }}
+                >
+                    <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+                        <LogoutIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" primaryTypographyProps={{ fontSize: '0.95rem' }} />
                 </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+             </ListItem>
+          </Box>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: 'background.default', minHeight: '100vh' }}>
-        <Toolbar />
+
+      {/* Main Content */}
+      <Box component="main" sx={{ flexGrow: 1, p: 4, bgcolor: '#FFFFFF', minHeight: '100vh' }}>
         <Outlet />
       </Box>
     </Box>
