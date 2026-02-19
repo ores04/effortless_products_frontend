@@ -17,23 +17,23 @@ export const endpoints = {
     logout: `${API_BASE_URL}${API_PREFIX}/auth/logout`,
 
     // keys
-    keys: `${API_BASE_URL}${API_PREFIX}/keys`,
+    keys: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/keys`,
 
     // usage
-    usageSummary: `${API_BASE_URL}${API_PREFIX}/usage/summary`,
-    usageKeys: `${API_BASE_URL}${API_PREFIX}/usage/keys`,
-    usageRecent: `${API_BASE_URL}${API_PREFIX}/usage/recent`,
+    usageSummary: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/usage/summary`,
+    usageKeys: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/usage/keys`,
+    usageRecent: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/usage/recent`, // NOTE: this is not implemented yet
 
     // billing
-    billing: `${API_BASE_URL}${API_PREFIX}/billing`,
-    billingCheckout: `${API_BASE_URL}${API_PREFIX}/billing/checkout`,
-    billingPortal: `${API_BASE_URL}${API_PREFIX}/billing/portal`,
+    billing: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing`,
+    billingCheckout: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/checkout`,
+    billingPortal: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/portal`,
 
     // datasets
-    datasets: `${API_BASE_URL}${API_PREFIX}/datasets`,
+    datasets: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`,
 
     // stores
-    stores: `${API_BASE_URL}${API_PREFIX}/stores`,
+    stores: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/stores`,
 
     // products (v1)
     products: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/products`,
@@ -42,4 +42,5 @@ export const endpoints = {
 
 export const defaultHeaders = {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
 };

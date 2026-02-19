@@ -1,10 +1,11 @@
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, IconButton, CssBaseline, Divider, Chip } from '@mui/material';
+import React from 'react';
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, CssBaseline } from '@mui/material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/DashboardOutlined';
 import KeyIcon from '@mui/icons-material/VpnKeyOutlined';
 import CreditCardIcon from '@mui/icons-material/CreditCardOutlined';
 import StorageIcon from '@mui/icons-material/StorageOutlined';
-import StoreIcon from '@mui/icons-material/StorefrontOutlined';
+import ApiIcon from '@mui/icons-material/ApiOutlined';
 import LogoutIcon from '@mui/icons-material/LogoutOutlined';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,7 +24,7 @@ const menuGroups = [
     title: 'Management',
     items: [
       { text: 'Datasets', icon: <StorageIcon />, path: '/dashboard/datasets' },
-      { text: 'Stores', icon: <StoreIcon />, path: '/dashboard/stores' },
+      { text: 'Endpoints', icon: <ApiIcon />, path: '/dashboard/endpoints' },
     ]
   },
   {
@@ -68,7 +69,7 @@ export default function DashboardLayout() {
         <Box sx={{ mb: 4, px: 2 }}>
              {/* Placeholder for logo or brand name if desired, currently empty to match clean style */}
              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', letterSpacing: 1, opacity: 0.5 }}>
-                 EFFORTLESS
+                 Effortless Products
              </Typography>
         </Box>
 

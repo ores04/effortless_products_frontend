@@ -12,7 +12,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import ApiKeysPage from './pages/dashboard/ApiKeysPage';
 import BillingPage from './pages/dashboard/BillingPage';
 import DatasetsPage from './pages/dashboard/DatasetsPage';
-import StoresPage from './pages/dashboard/StoresPage';
+import EndpointsPage from './pages/dashboard/EndpointsPage';
 
 const router = createBrowserRouter([
   {
@@ -70,8 +70,8 @@ const router = createBrowserRouter([
         element: <DatasetsPage />,
       },
       {
-        path: 'stores',
-        element: <StoresPage />,
+        path: 'endpoints',
+        element: <EndpointsPage />,
       },
     ],
   },

@@ -56,10 +56,6 @@ export default function Header() {
                 {item.name}
               </Button>
             ))}
-             {/* Icon Placeholder */}
-             <Button sx={{ minWidth: 'auto', p: 0.5 }}>
-                <Box sx={{ width: 20, height: 20, bgcolor: 'text.primary', mask: 'url(https://unpkg.com/simple-icons@v9/icons/lighthouse.svg) no-repeat center / contain', WebkitMask: 'url(https://unpkg.com/simple-icons@v9/icons/lighthouse.svg) no-repeat center / contain' }} />
-             </Button>
 
             {/* Auth Section */}
             {isAuthenticated ? (
