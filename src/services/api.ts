@@ -30,7 +30,8 @@ export const endpoints = {
 
     // billing
     billing: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing`,
-    billingCheckout: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/checkout`,
+    billingCheckoutSubscription: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/checkout/subscription`,
+    billingCheckoutDataset: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/checkout/dataset`,
     billingPortal: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/billing/portal`,
 
     // datasets

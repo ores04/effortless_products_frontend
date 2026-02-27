@@ -1,5 +1,9 @@
-import { Box, Container, Stack, Typography, Paper, Button } from '@mui/material';
+import { useState } from 'react';
+import { Box, Container, Stack, Typography, Paper, Button, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import PricingCard from '../components/PricingCard';
+import { billingService } from '../services/billingService';
+import { useAuth } from '../context/AuthContext';
 
 const tiers = [
   {
@@ -12,6 +16,7 @@ const tiers = [
       'Commercial license',
     ],
     highlighted: false,
+    planId: 'occasional',
   },
   {
     title: 'Weekly Updates',
@@ -24,6 +29,7 @@ const tiers = [
       'API Access',
     ],
     highlighted: true,
+    planId: 'go',
   },
   {
     title: 'Daily Updates',
@@ -37,10 +43,35 @@ const tiers = [
       'Custom data requests',
     ],
     highlighted: false,
+    planId: 'pro',
   },
 ];
 
 export default function PricingPage() {
+  const { user, token } = useAuth();
+  const navigate = useNavigate();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSelectPlan = async (planId: string) => {
+    if (!user || !token) {
+      // Prompt user to login first
+      navigate('/login?redirect=/pricing');
+      return;
+    }
+
+    setLoadingPlan(planId);
+    setError(null);
+    try {
+      const { checkout_url } = await billingService.createSubscriptionCheckout(planId, token);
+      // Redirect directly to Stripe Checkout
+      window.location.href = checkout_url;
+    } catch (err: any) {
+      setError(err.message || 'Failed to start checkout. Please try again later.');
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <Box sx={{ py: 8 }}>
       <Container maxWidth="xl">
@@ -80,10 +111,17 @@ export default function PricingPage() {
           <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700, textAlign: 'center', mb: 6 }}>
             Subscription Plans
           </Typography>
+          
+          {error && <Alert severity="error" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>{error}</Alert>}
+          
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="stretch">
             {tiers.map((tier) => (
               <Box key={tier.title} sx={{ flex: 1, width: '100%' }}>
-                <PricingCard {...tier} />
+                <PricingCard 
+                  {...tier} 
+                  onSelect={handleSelectPlan} 
+                  loading={loadingPlan === tier.planId} 
+                />
               </Box>
             ))}
           </Stack>

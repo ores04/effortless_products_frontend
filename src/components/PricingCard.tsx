@@ -7,9 +7,21 @@ interface PricingCardProps {
   features: string[];
   buttonText?: string;
   highlighted?: boolean;
+  planId?: string;
+  onSelect?: (planId: string) => void;
+  loading?: boolean;
 }
 
-export default function PricingCard({ title, price, features, buttonText = 'Choose Plan', highlighted = false }: PricingCardProps) {
+export default function PricingCard({ 
+  title, 
+  price, 
+  features, 
+  buttonText = 'Choose Plan', 
+  highlighted = false,
+  planId,
+  onSelect,
+  loading = false,
+}: PricingCardProps) {
   return (
     <Card 
       sx={{ 
@@ -71,8 +83,10 @@ export default function PricingCard({ title, price, features, buttonText = 'Choo
           fullWidth 
           size="large"
           sx={{ py: 1.5, fontWeight: 600, borderRadius: 2 }}
+          onClick={() => onSelect && planId && onSelect(planId)}
+          disabled={loading}
         >
-          {buttonText}
+          {loading ? 'Redirecting...' : buttonText}
         </Button>
       </CardActions>
     </Card>

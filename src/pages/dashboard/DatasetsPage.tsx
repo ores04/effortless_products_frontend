@@ -17,11 +17,13 @@ import StorageIcon from '@mui/icons-material/StorageOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../../context/AuthContext';
 import { datasetService, type Dataset } from '../../services/datasetService';
+import { billingService } from '../../services/billingService';
 
 export default function DatasetsPage() {
   const { token } = useAuth();
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,6 +42,19 @@ export default function DatasetsPage() {
     };
     fetchDatasets();
   }, [token]);
+
+  const handleCheckoutDataset = async (datasetId: string) => {
+    if (!token) return;
+    setCheckoutLoading(datasetId);
+    setError(null);
+    try {
+      const { checkout_url } = await billingService.createDatasetCheckout(datasetId, token);
+      window.location.href = checkout_url;
+    } catch (err: any) {
+      setError(err.message || 'Failed to initiate purchase for this dataset.');
+      setCheckoutLoading(null);
+    }
+  };
 
   if (loading) {
      return (
@@ -149,11 +164,13 @@ export default function DatasetsPage() {
                     />
                   </Box>
                 </CardContent>
-                <CardActions sx={{ justifyContent: 'flex-end', px: 3, pb: 3, pt: 0 }}>
+                <CardActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2, pt: 0, gap: 1 }}>
                   <Button 
                     size="small" 
                     variant="contained" 
                     disableElevation
+                    onClick={() => handleCheckoutDataset(dataset.id)}
+                    disabled={checkoutLoading === dataset.id}
                     sx={{ 
                       bgcolor: '#fff', 
                       color: '#111827',
@@ -165,7 +182,7 @@ export default function DatasetsPage() {
                       }
                     }}
                   >
-                    Details
+                    {checkoutLoading === dataset.id ? 'Loading...' : 'Unlock Dataset'}
                   </Button>
                 </CardActions>
               </Card>

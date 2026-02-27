@@ -11,6 +11,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ApiKeysPage from './pages/dashboard/ApiKeysPage';
 import BillingPage from './pages/dashboard/BillingPage';
+import BillingSuccessPage from './pages/dashboard/BillingSuccessPage';
 import DatasetsPage from './pages/dashboard/DatasetsPage';
 import EndpointsPage from './pages/dashboard/EndpointsPage';
 import VideoUploadPage from './pages/dashboard/VideoUploadPage';
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: 'billing',
         element: <BillingPage />,
+      },
+      {
+        path: 'billing/success',
+        element: <BillingSuccessPage />,
       },
       {
         path: 'datasets',
