@@ -13,6 +13,7 @@ import ApiKeysPage from './pages/dashboard/ApiKeysPage';
 import BillingPage from './pages/dashboard/BillingPage';
 import DatasetsPage from './pages/dashboard/DatasetsPage';
 import EndpointsPage from './pages/dashboard/EndpointsPage';
+import VideoUploadPage from './pages/dashboard/VideoUploadPage';
 
 const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
       {
         path: 'endpoints',
         element: <EndpointsPage />,
+      },
+      {
+        path: 'video-upload',
+        element: <VideoUploadPage />,
       },
     ],
   },

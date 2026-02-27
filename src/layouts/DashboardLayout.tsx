@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, CssBaseline } from '@mui/material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/DashboardOutlined';
@@ -7,6 +6,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCardOutlined';
 import StorageIcon from '@mui/icons-material/StorageOutlined';
 import ApiIcon from '@mui/icons-material/ApiOutlined';
 import LogoutIcon from '@mui/icons-material/LogoutOutlined';
+import CloudUploadIcon from '@mui/icons-material/CloudUploadOutlined';
 import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 260; // Slightly wider for better spacing
@@ -36,7 +36,7 @@ const menuGroups = [
 ];
 
 export default function DashboardLayout() {
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,6 +44,16 @@ export default function DashboardLayout() {
     await logout();
     navigate('/');
   };
+
+  const activeMenuGroups = [...menuGroups];
+  if (isAdmin) {
+    activeMenuGroups.push({
+      title: 'Admin',
+      items: [
+        { text: 'Video Upload', icon: <CloudUploadIcon />, path: '/dashboard/video-upload' },
+      ]
+    });
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -74,7 +84,7 @@ export default function DashboardLayout() {
         </Box>
 
         <Box sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {menuGroups.map((group, index) => (
+          {activeMenuGroups.map((group, index) => (
             <Box key={index} sx={{ mb: 3 }}>
               {group.title && (
                 <Typography 

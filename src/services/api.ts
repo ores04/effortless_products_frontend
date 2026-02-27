@@ -1,4 +1,4 @@
-export const API_BASE_URL_PROD = 'https://api.products.effort-less.de';
+export const API_BASE_URL_PROD = 'https://effortless-products-8enoe.ondigitalocean.app';
 
 export const API_BASE_DEBUG_URL = 'https://euphoniously-heterodont-ellen.ngrok-free.app';
 
@@ -8,7 +8,11 @@ export const API_VERSION = '/v1';
 
 // check if VITE_DEBUG is true, then use API_BASE_DEBUG_URL, otherwise use API_BASE_URL
 
-export const API_BASE_URL = import.meta.env.VITE_DEBUG ? API_BASE_DEBUG_URL : API_BASE_URL_PROD;
+const isDebug = import.meta.env.VITE_DEBUG === 'true';
+
+export const API_BASE_URL = import.meta.env.VITE_SERVER_URL || (isDebug ? API_BASE_DEBUG_URL : API_BASE_URL_PROD);
+
+export const SIDECAR_BASE_URL = import.meta.env.VITE_SIDECAR_URL || API_BASE_URL;
 
 export const endpoints = {
     // auth do not have a version
@@ -38,6 +42,7 @@ export const endpoints = {
     // products (v1)
     products: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/products`,
     datasetProducts: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`, // + /:id/products
+    processVideo: `${SIDECAR_BASE_URL}${API_PREFIX}${API_VERSION}/video/process`,
 };
 
 export const defaultHeaders = {

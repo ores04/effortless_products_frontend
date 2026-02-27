@@ -13,7 +13,7 @@ export interface UsageRecord {
     method: string;
     call_count: number;
     error_count: number;
-    created_at: string | null;
+    date: string | null;
 }
 
 export type UsageByKeyResponse = Record<string, UsageRecord[]>;

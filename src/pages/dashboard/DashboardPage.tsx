@@ -18,7 +18,9 @@ import {
   CartesianGrid,
   Legend,
   ResponsiveContainer,
-  Tooltip
+  Tooltip,
+  LineChart,
+  Line
 } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
 import { usageService, type UsageSummary, type UsageByKeyResponse } from '../../services/usageService';
@@ -71,7 +73,18 @@ export default function DashboardPage() {
 
   // Prepare Data for Charts
 
+  // 1. Daily Requests
+  const dailyDataMap = new Map<string, number>();
+  Object.values(keysUsage || {}).forEach(records => {
+    records.forEach(r => {
+      const dateKey = r.date || new Date().toISOString().split('T')[0];
+      dailyDataMap.set(dateKey, (dailyDataMap.get(dateKey) || 0) + r.call_count);
+    });
+  });
 
+  const dailyChartData = Array.from(dailyDataMap.entries())
+    .map(([date, count]) => ({ date, count }))
+    .sort((a, b) => a.date.localeCompare(b.date)); // Sort chronologically
 
   // 2. Usage by Key (Stacked Bar Chart by Endpoint)
   const allEndpoints = new Set<string>();
@@ -126,17 +139,30 @@ export default function DashboardPage() {
       </Grid>
       
       <Grid container spacing={4}>
-        {/* Chart 1: Daily Requests - HIDDEN/REMOVED since no history data available in schema */}
-        {/*
+        {/* Chart 1: Daily Requests */}
         <Grid size={{ xs: 12 }}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%' }}>
             <Typography variant="h6" gutterBottom>Daily Request Volume</Typography>
-            <Box sx={{ height: 300 }}>
-               ...
+            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.palette.divider} />
+                  <XAxis dataKey="date" stroke={theme.palette.text.secondary} />
+                  <YAxis stroke={theme.palette.text.secondary} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      borderRadius: 8, 
+                      border: 'none', 
+                      boxShadow: theme.shadows[3],
+                      backgroundColor: theme.palette.background.paper
+                    }} 
+                  />
+                  <Line type="monotone" dataKey="count" name="Requests" stroke={theme.palette.primary.main} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                </LineChart>
+              </ResponsiveContainer>
             </Box>
           </Paper>
         </Grid>
-        */}
 
         {/* Chart 2: Usage by Key */}
         <Grid size={{ xs: 12 }}>

@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -21,6 +22,14 @@ interface AuthContextType {
   error: string | null;
   supabase: SupabaseClient | null;
 }
+
+const parseJwt = (token: string) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -45,7 +54,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize Supabase client and fetch user when token changes
   useEffect(() => {
+    let logoutTimer: ReturnType<typeof setTimeout>;
+
     const initSupabase = async () => {
+      if (token) {
+        const decoded = parseJwt(token);
+        if (decoded && decoded.exp) {
+          const expirationTime = decoded.exp * 1000;
+          const timeUntilExpiry = expirationTime - Date.now();
+          
+          if (timeUntilExpiry <= 0) {
+            console.warn('Token expired, logging out automatically');
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('authToken');
+            return;
+          } else {
+            // Set a timer to log out when the token expires
+            logoutTimer = setTimeout(() => {
+              console.warn('Token expired while session was active, logging out');
+              setToken(null);
+              setUser(null);
+              localStorage.removeItem('authToken');
+            }, timeUntilExpiry);
+          }
+        }
+      }
+
       const client = createSupabaseClient(token || undefined);
       setSupabase(client);
 
@@ -56,9 +91,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(user);
         } else if (error) {
           console.error('Error fetching user:', error);
-          // Optional: Clear token if invalid?
-          // setToken(null);
-          // localStorage.removeItem('authToken');
+          if (error.status === 401 || error.message.toLowerCase().includes('expired')) {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('authToken');
+          }
         }
       } else {
         setUser(null);
@@ -66,6 +103,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initSupabase();
+
+    return () => {
+      if (logoutTimer) clearTimeout(logoutTimer);
+    };
   }, [token]);
 
 
@@ -161,9 +202,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const isAuthenticated = !!token;
+  
+  const decodedToken = token ? parseJwt(token) : null;
+  const isAdmin = 
+    decodedToken?.app_metadata?.role === 'admin' || 
+    decodedToken?.raw_app_meta_data?.role === 'admin' || 
+    decodedToken?.role === 'admin' || 
+    user?.app_metadata?.role === 'admin' || 
+    (user as any)?.raw_app_meta_data?.role === 'admin' ||
+    false;
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, login, register, logout, loading, error, supabase }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, login, register, logout, loading, error, supabase }}>
       {children}
     </AuthContext.Provider>
   );
