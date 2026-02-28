@@ -36,6 +36,8 @@ export const endpoints = {
 
     // datasets
     datasets: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`,
+    datasetsUnlocked: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets/unlocked`,
+    datasetDownload: (datasetId: string) => `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets/${datasetId}/download`,
 
     // stores
     stores: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/stores`,

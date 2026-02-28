@@ -39,11 +39,21 @@ export const datasetService = {
         });
         if (!response.ok) throw new Error('Failed to fetch datasets');
         const data = await response.json();
-        // Handle if it's an array or wrapped
         if (Array.isArray(data)) {
             return data;
         }
         return (data as any).datasets || [];
+    },
+
+    getUnlockedDatasets: async (token: string): Promise<Dataset[]> => {
+        const response = await fetch(endpoints.datasetsUnlocked, {
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to fetch unlocked datasets');
+        return response.json();
     },
 
     getDataset: async (token: string, id: string): Promise<Dataset> => {

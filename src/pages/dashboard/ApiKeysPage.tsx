@@ -27,6 +27,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../context/AuthContext';
 import { apiKeyService, type ApiKey } from '../../services/apiKeyService';
+import { billingService } from '../../services/billingService';
 
 export default function ApiKeysPage() {
   const { token } = useAuth();
@@ -34,6 +35,7 @@ export default function ApiKeysPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [userPlan, setUserPlan] = useState<string | null>(null);
 
   // Dialog States
   const [createOpen, setCreateOpen] = useState(false);
@@ -50,8 +52,12 @@ export default function ApiKeysPage() {
     if (!token) return;
     setLoading(true);
     try {
-      const data = await apiKeyService.listKeys(token);
+      const [data, billingData] = await Promise.all([
+        apiKeyService.listKeys(token),
+        billingService.getBillingInfo(token).catch(() => ({ plan: 'free' })) // Fallback to free on error
+      ]);
       setKeys(data);
+      setUserPlan(billingData?.plan || 'free');
     } catch (err) {
       setError('Failed to load API keys');
       console.error(err);
@@ -128,6 +134,12 @@ export default function ApiKeysPage() {
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      
+      {userPlan === 'free' && (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          API Keys are not active on the Free tier. Please upgrade to a paid plan to use the API.
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>

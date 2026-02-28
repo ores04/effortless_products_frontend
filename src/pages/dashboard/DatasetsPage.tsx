@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Box, 
   Typography, 
@@ -11,10 +12,15 @@ import {
   Alert,
   Chip,
   IconButton,
-  Paper
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
 } from '@mui/material';
 import StorageIcon from '@mui/icons-material/StorageOutlined';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useAuth } from '../../context/AuthContext';
 import { datasetService, type Dataset } from '../../services/datasetService';
 import { billingService } from '../../services/billingService';
@@ -22,17 +28,37 @@ import { billingService } from '../../services/billingService';
 export default function DatasetsPage() {
   const { token } = useAuth();
   const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [unlockedDatasets, setUnlockedDatasets] = useState<Dataset[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [downloadLoading, setDownloadLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+
+  useEffect(() => {
+    // Check for Stripe redirect
+    if (searchParams.get('session_id')) {
+      setSuccessMessage('Payment successful! Your dataset has been unlocked.');
+      // Optional: you could clean up the URL to remove the session_id
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchDatasets = async () => {
       if (!token) return;
       setLoading(true);
       try {
-        const data = await datasetService.listDatasets(token);
+        const [data, unlockedData] = await Promise.all([
+          datasetService.listDatasets(token),
+          datasetService.getUnlockedDatasets(token).catch(() => []) // Gracefully fallback 
+        ]);
         setDatasets(data);
+        setUnlockedDatasets(unlockedData);
       } catch (err) {
         console.error(err);
         setError('Failed to load datasets');
@@ -56,6 +82,65 @@ export default function DatasetsPage() {
     }
   };
 
+  const handleDownloadDataset = async (datasetId: string) => {
+    if (!token) return;
+    setDownloadLoading(datasetId);
+    setError(null);
+    try {
+      // Create an object URL from the blob response
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL || 'https://effortless-products-8enoe.ondigitalocean.app'}/api/v1/datasets/${datasetId}/download`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 403 || response.status === 402) {
+          throw new Error('You need to unlock this dataset or upgrade your plan to download it.');
+        }
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Failed to download dataset.');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Try to get filename from content-disposition header if available
+      const disposition = response.headers.get('content-disposition');
+      let filename = `dataset-${datasetId}.json`;
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          const matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1]) { 
+            filename = matches[1].replace(/['"]/g, '');
+          }
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+    } catch (err: any) {
+      setError(err.message || 'Error downloading dataset.');
+    } finally {
+      setDownloadLoading(null);
+    }
+  };
+
+  const handleOpenInfo = (dataset: Dataset) => {
+    setSelectedDataset(dataset);
+    setInfoDialogOpen(true);
+  };
+
+  const handleCloseInfo = () => {
+    setInfoDialogOpen(false);
+    setSelectedDataset(null);
+  };
+
   if (loading) {
      return (
        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -74,8 +159,13 @@ export default function DatasetsPage() {
         <Typography variant="h4" sx={{ fontWeight: 300 }}>
           Datasets
         </Typography>
-
       </Box>
+
+      {successMessage && (
+        <Alert severity="success" sx={{ mb: 4 }} onClose={() => setSuccessMessage(null)}>
+          {successMessage}
+        </Alert>
+      )}
 
       {datasets.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
@@ -130,8 +220,8 @@ export default function DatasetsPage() {
                          {dataset.name}
                        </Typography>
                     </Box>
-                    <IconButton size="small" sx={{ color: '#6B7280', mt: -0.5, mr: -1 }}>
-                      <MoreVertIcon />
+                    <IconButton size="small" sx={{ color: '#6B7280', mt: -0.5, mr: -1 }} onClick={() => handleOpenInfo(dataset)}>
+                      <InfoOutlinedIcon />
                     </IconButton>
                   </Box>
                   
@@ -165,25 +255,47 @@ export default function DatasetsPage() {
                   </Box>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2, pt: 0, gap: 1 }}>
-                  <Button 
-                    size="small" 
-                    variant="contained" 
-                    disableElevation
-                    onClick={() => handleCheckoutDataset(dataset.id)}
-                    disabled={checkoutLoading === dataset.id}
-                    sx={{ 
-                      bgcolor: '#fff', 
-                      color: '#111827',
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      '&:hover': {
-                        bgcolor: '#f9fafb'
-                      }
-                    }}
-                  >
-                    {checkoutLoading === dataset.id ? 'Loading...' : 'Unlock Dataset'}
-                  </Button>
+                  {unlockedDatasets.map((d) => d.id).includes(dataset.id) ? (
+                    <Button 
+                      size="small" 
+                      variant="contained" 
+                      disableElevation
+                      onClick={() => handleDownloadDataset(dataset.id)}
+                      disabled={downloadLoading === dataset.id}
+                      sx={{ 
+                        color: '#fff',
+                        bgcolor: '#111827',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: '#1f2937',
+                        }
+                      }}
+                    >
+                      {downloadLoading === dataset.id ? 'Starting...' : 'Download'}
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="small" 
+                      variant="contained" 
+                      disableElevation
+                      onClick={() => handleCheckoutDataset(dataset.id)}
+                      disabled={checkoutLoading === dataset.id || downloadLoading === dataset.id}
+                      sx={{ 
+                        bgcolor: '#fff', 
+                        color: '#111827',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: '#f9fafb'
+                        }
+                      }}
+                    >
+                      {checkoutLoading === dataset.id ? 'Loading...' : 'Unlock'}
+                    </Button>
+                  )}
                 </CardActions>
               </Card>
             </Grid>
@@ -191,6 +303,103 @@ export default function DatasetsPage() {
           })}
         </Grid>
       )}
+
+      {/* Dataset Info Dialog */}
+      <Dialog open={infoDialogOpen} onClose={handleCloseInfo} maxWidth="sm" fullWidth>
+        {selectedDataset && (
+          <>
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 2 }}>
+              <StorageIcon sx={{ color: '#6B7280' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                {selectedDataset.name} Details
+              </Typography>
+            </DialogTitle>
+            <Divider />
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 3 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  ID
+                </Typography>
+                <Typography variant="body2" sx={{ fontFamily: 'monospace', mb: 1.5 }}>
+                  {selectedDataset.id}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Description
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1.5 }}>
+                  {selectedDataset.description || 'No description available for this dataset.'}
+                </Typography>
+              </Box>
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Status
+                  </Typography>
+                  <Chip 
+                    label={selectedDataset.status} 
+                    size="small" 
+                    color={selectedDataset.status === 'active' || selectedDataset.status === 'completed' ? 'success' : 'default'} 
+                    variant="outlined" 
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Products
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedDataset.product_count}
+                  </Typography>
+                </Grid>
+                
+                {selectedDataset.snapshot_date && (
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Snapshot Date
+                    </Typography>
+                    <Typography variant="body2">
+                      {new Date(selectedDataset.snapshot_date).toLocaleDateString()}
+                    </Typography>
+                  </Grid>
+                )}
+                
+                {selectedDataset.import_method && (
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Import Method
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedDataset.import_method}
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+
+              {selectedDataset.source_url && (
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Source URL
+                  </Typography>
+                  <Typography variant="body2" sx={{ wordBreak: 'break-all', color: 'primary.main' }}>
+                    <a href={selectedDataset.source_url} target="_blank" rel="noopener noreferrer">
+                      {selectedDataset.source_url}
+                    </a>
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <Divider />
+            <DialogActions sx={{ p: 2 }}>
+              <Button onClick={handleCloseInfo} variant="outlined" color="inherit">
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 }

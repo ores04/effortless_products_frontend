@@ -7,43 +7,51 @@ import { useAuth } from '../context/AuthContext';
 
 const tiers = [
   {
-    title: 'Occasional',
-    price: '€49',
+    title: 'Tryout',
+    price: '€9',
     features: [
-      'Access to standard datasets',
-      'Data refreshed monthly',
-      'Standard support',
-      'Commercial license',
+      '0 free dataset unlocks',
+      '50 API requests per day',
     ],
     highlighted: false,
-    planId: 'occasional',
+    planId: 'tryout',
   },
   {
-    title: 'Weekly Updates',
-    price: '€199',
+    title: 'Go',
+    price: '€29',
     features: [
-      'Access to all datasets',
-      'Guaranteed weekly updates',
-      'Priority email support',
-      'Extended commercial license',
-      'API Access',
+      '1 free dataset unlock per month',
+      '250 requests per endpoint per day',
+      '1,500 requests per endpoint per month',
+      'Pay as you go for overages',
     ],
     highlighted: true,
     planId: 'go',
   },
   {
-    title: 'Daily Updates',
-    price: '€499',
+    title: 'Pro',
+    price: '€89',
     features: [
-      'Access to all datasets',
-      'Guaranteed daily updates',
-      '24/7 Priority support',
-      'Enterprise license',
-      'Full API Access',
-      'Custom data requests',
+      '5 free dataset unlocks per month',
+      '1,000 API requests per day',
+      '10,000 requests per month',
+      'Pay as you go for overages',
     ],
     highlighted: false,
     planId: 'pro',
+  },
+  {
+    title: 'Enterprise',
+    price: 'Custom',
+    priceSuffix: '',
+    buttonText: 'Contact Us',
+    features: [
+      'Pay as you go',
+      'Discounts on dataset unlocks',
+      'Dedicated support',
+    ],
+    highlighted: false,
+    planId: 'enterprise',
   },
 ];
 
@@ -54,6 +62,11 @@ export default function PricingPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSelectPlan = async (planId: string) => {
+    if (planId === 'enterprise') {
+      window.location.href = 'mailto:hello@effortlessproducts.com';
+      return;
+    }
+
     if (!user || !token) {
       // Prompt user to login first
       navigate('/login?redirect=/pricing');
@@ -95,7 +108,7 @@ export default function PricingPage() {
                 Need a specific dataset for a one-off project? You can purchase and download any individual dataset directly from our catalog.
               </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                Prices range from €50 to €500 per dataset depending on complexity and volume.
+                €39 per Dataset and €99 for large datasets.
               </Typography>
             </Box>
             <Box sx={{ width: { xs: '100%', md: 'auto' }, textAlign: { xs: 'left', md: 'right' } }}>

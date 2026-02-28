@@ -80,44 +80,95 @@ export default function BillingPage() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Go Plan</Typography>
-              <Typography variant="h4" sx={{ mb: 2 }}>€199<Typography component="span" color="text.secondary">/mo</Typography></Typography>
+        {/* Tryout */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" gutterBottom>Tryout Plan</Typography>
+              <Typography variant="h4" sx={{ mb: 2 }}>€9<Typography component="span" color="text.secondary">/mo</Typography></Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Guaranteed weekly updates, API Access, and more.
+                0 free dataset unlocks, 50 API requests per day.
               </Typography>
+            </CardContent>
+            <Box sx={{ p: 2, pt: 0 }}>
               <Button 
-                variant={subInfo?.plan === 'go' ? "outlined" : "contained"} 
+                variant={subInfo?.plan === 'tryout' ? "outlined" : "contained"} 
                 fullWidth 
+                onClick={() => handleCheckout('tryout')}
+                disabled={actionLoading !== null || subInfo?.plan === 'tryout'}
+              >
+                {actionLoading === 'tryout' ? 'Loading...' : subInfo?.plan === 'tryout' ? 'Current Plan' : 'Subscribe to Tryout'}
+              </Button>
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Go Plan */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'primary.main', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" gutterBottom color="primary.main">Go Plan</Typography>
+              <Typography variant="h4" sx={{ mb: 2 }}>€29<Typography component="span" color="text.secondary">/mo</Typography></Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                1 free dataset unlock per month, 250 requests per endpoint per day.
+              </Typography>
+            </CardContent>
+             <Box sx={{ p: 2, pt: 0 }}>
+              <Button 
+                variant={subInfo?.plan === 'go' ? "contained" : "contained"} 
+                fullWidth 
+                color="primary"
                 onClick={() => handleCheckout('go')}
                 disabled={actionLoading !== null || subInfo?.plan === 'go'}
               >
                 {actionLoading === 'go' ? 'Loading...' : subInfo?.plan === 'go' ? 'Current Plan' : 'Subscribe to Go'}
               </Button>
-            </CardContent>
+            </Box>
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-            <CardContent>
+        {/* Pro Plan */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="h6" gutterBottom>Pro Plan</Typography>
-              <Typography variant="h4" sx={{ mb: 2 }}>€499<Typography component="span" color="text.secondary">/mo</Typography></Typography>
+              <Typography variant="h4" sx={{ mb: 2 }}>€89<Typography component="span" color="text.secondary">/mo</Typography></Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Guaranteed daily updates, Enterprise license, Custom requests.
+                5 free dataset unlocks per month, 1,000 API requests per day.
               </Typography>
+            </CardContent>
+            <Box sx={{ p: 2, pt: 0 }}>
               <Button 
                 variant={subInfo?.plan === 'pro' ? "outlined" : "contained"} 
-                color="primary"
                 fullWidth 
                 onClick={() => handleCheckout('pro')}
                 disabled={actionLoading !== null || subInfo?.plan === 'pro'}
               >
                 {actionLoading === 'pro' ? 'Loading...' : subInfo?.plan === 'pro' ? 'Current Plan' : 'Subscribe to Pro'}
               </Button>
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Enterprise Plan */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" gutterBottom>Enterprise</Typography>
+              <Typography variant="h4" sx={{ mb: 2 }}>Custom</Typography>
+               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Pay as you go, discounts on dataset unlocks, dedicated support.
+              </Typography>
             </CardContent>
+             <Box sx={{ p: 2, pt: 0 }}>
+                <Button 
+                  variant="outlined" 
+                  fullWidth 
+                  onClick={() => window.location.href = 'mailto:hello@effortlessproducts.com'}
+                >
+                  Contact Us
+                </Button>
+              </Box>
           </Card>
         </Grid>
       </Grid>

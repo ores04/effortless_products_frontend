@@ -4,6 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 interface PricingCardProps {
   title: string;
   price: string;
+  priceSuffix?: string;
   features: string[];
   buttonText?: string;
   highlighted?: boolean;
@@ -15,6 +16,7 @@ interface PricingCardProps {
 export default function PricingCard({ 
   title, 
   price, 
+  priceSuffix = '/mo',
   features, 
   buttonText = 'Choose Plan', 
   highlighted = false,
@@ -61,9 +63,11 @@ export default function PricingCard({
         </Typography>
         <Typography variant="h4" component="div" sx={{ fontWeight: 800, mb: 3 }}>
           {price}
-          <Typography component="span" variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>
-            /mo
-          </Typography>
+          {priceSuffix && (
+            <Typography component="span" variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>
+              {priceSuffix}
+            </Typography>
+          )}
         </Typography>
         
         <List dense>
