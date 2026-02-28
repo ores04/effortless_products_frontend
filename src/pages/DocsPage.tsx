@@ -8,6 +8,7 @@ import 'highlight.js/styles/github-dark.css';
 const navItems = [
   { id: 'quickstart', label: 'Quickstart' },
   { id: 'authentication', label: 'Authentication' },
+  { id: 'data-model', label: 'Data Model' },
   { id: 'rate-limits', label: 'Rate Limits' },
   { id: 'products', label: 'Products API' },
 ];
@@ -40,6 +41,37 @@ curl -X GET "https://api.effortlessproducts.com/v1/datasets/{dataset_id}/product
 \`\`\`
 
 > **Note:** Do not share your API keys in publicly accessible areas such as GitHub or client-side code.
+`,
+  'data-model': `
+# Data Model
+
+Understanding how entities logistically connect in **Effortless Products** is essential to leveraging the API successfully. 
+
+Our data catalog revolves around three primary tables: \`store_meta\`, \`dataset\`, and \`dataset_product\`.
+
+### Hierarchy Overview
+
+1. **\`store_meta\`** (Store)
+   The top-level entity representing a brand, shop, or physical entity (e.g., "Apple", "Walmart").
+   *Primary Key:* \`id\`
+
+2. **\`dataset\`** (Dataset Collection)
+   Belongs to a \`store_meta\`. It acts as a specific snapshot, collection, or chronological scrape of products from that store. A single store can have multiple datasets over time.
+   *Primary Key:* \`id\`
+   *Foreign Key:* \`store_id\` -> \`store_meta.id\`
+
+3. **\`dataset_product\`** (Individual Product)
+   Belongs to a \`dataset\`. Represents a single manufactured item or sku.
+   *Primary Key:* \`id\`
+   *Foreign Key:* \`dataset_id\` -> \`dataset.id\`
+
+### Standard Relationship Flow
+
+\`\`\`
+[ store_meta ] 1 ----- * [ dataset ] 1 ----- * [ dataset_product ]
+\`\`\`
+
+When using the API, you typically retrieve a catalog of datasets (representing different stores or categories), obtain the corresponding \`dataset.id\`, and then query the \`dataset_product\` table to fetch the actual product listings inside it.
 `,
   'rate-limits': `
 # Rate Limits
