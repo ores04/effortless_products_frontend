@@ -206,7 +206,17 @@ export default function VideoUploadPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 300 }}>
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{
+            fontWeight: 300,
+            color: 'text.primary',
+            mb: 2,
+            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            lineHeight: 1.2
+          }}
+        >
           Video Processing Pipeline
         </Typography>
         

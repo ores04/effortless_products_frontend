@@ -63,7 +63,7 @@ export default function HighlightDatasets() {
   return (
     <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
       <Container maxWidth="xl">
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700, mb: 4 }}>
+        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 300, mb: 4 }}>
           Highlight Datasets
         </Typography>
         

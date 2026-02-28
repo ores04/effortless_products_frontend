@@ -24,13 +24,13 @@ export default function DatasetCard({ title, description, price, color, link }: 
       }}
     >
       <CardContent sx={{ flex: 1 }}>
-        <Typography variant="h6" component="div" gutterBottom sx={{ fontWeight: 700 }}>
+        <Typography variant="h6" component="div" gutterBottom sx={{ fontWeight: 300 }}>
           {title}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {description}
         </Typography>
-        <Typography variant="h6" color="primary.dark" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" color="primary.dark" sx={{ fontWeight: 300 }}>
           {price}
         </Typography>
       </CardContent>

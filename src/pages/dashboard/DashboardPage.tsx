@@ -109,7 +109,17 @@ export default function DashboardPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 300 }}>
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{
+          fontWeight: 300,
+          color: 'text.primary',
+          mb: 2,
+          fontSize: { xs: '2.5rem', md: '3.5rem' },
+          lineHeight: 1.2
+        }}
+      >
         Usage Overview
       </Typography>
 

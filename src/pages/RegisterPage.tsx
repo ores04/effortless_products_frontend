@@ -33,7 +33,17 @@ export default function RegisterPage() {
   return (
     <Container maxWidth="xs">
       <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{
+            fontWeight: 300,
+            color: 'text.primary',
+            mb: 2,
+            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            lineHeight: 1.2
+          }}
+        >
           Sign up
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

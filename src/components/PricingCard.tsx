@@ -58,10 +58,10 @@ export default function PricingCard({
         </Box>
       )}
       <CardContent sx={{ flex: 1, p: 3 }}>
-        <Typography variant="h5" component="div" gutterBottom sx={{ fontWeight: 700, color: highlighted ? 'primary.main' : 'text.primary' }}>
+        <Typography variant="h5" component="div" gutterBottom sx={{ fontWeight: 300, color: highlighted ? 'primary.main' : 'text.primary' }}>
           {title}
         </Typography>
-        <Typography variant="h4" component="div" sx={{ fontWeight: 800, mb: 3 }}>
+        <Typography variant="h4" component="div" sx={{ fontWeight: 300, mb: 3 }}>
           {price}
           {priceSuffix && (
             <Typography component="span" variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>

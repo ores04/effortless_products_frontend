@@ -154,6 +154,7 @@ export default function DocsPage() {
       <Box sx={{ flexGrow: 1, p: { xs: 4, md: 8 }, maxWidth: 900 }}>
         <Box 
           sx={{ 
+            '& h1, & h2, & h3, & h4, & h5, & h6': { fontWeight: 300 },
             '& h1': { ...Typography.prototype },
             '& pre': { 
               bgcolor: '#1a1a1a', 

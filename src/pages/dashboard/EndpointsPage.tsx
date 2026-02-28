@@ -110,7 +110,17 @@ const endpoints: EndpointDoc[] = [
 export default function EndpointsPage() {
   return (
     <Box>
-      <Typography variant="h4" sx={{ fontWeight: 300, mb: 1 }}>
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{
+          fontWeight: 300,
+          color: 'text.primary',
+          mb: 2,
+          fontSize: { xs: '2.5rem', md: '3.5rem' },
+          lineHeight: 1.2
+        }}
+      >
         API Endpoints
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>

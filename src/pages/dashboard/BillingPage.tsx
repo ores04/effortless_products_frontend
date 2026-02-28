@@ -49,7 +49,17 @@ export default function BillingPage() {
 
   return (
     <Box maxWidth="md" mx="auto">
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 300, mb: 4 }}>
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{
+          fontWeight: 300,
+          color: 'text.primary',
+          mb: 2,
+          fontSize: { xs: '2.5rem', md: '3.5rem' },
+          lineHeight: 1.2
+        }}
+      >
         Billing & Subscription
       </Typography>
 
@@ -60,7 +70,7 @@ export default function BillingPage() {
           <Box>
             <Typography variant="h6" gutterBottom>Current Plan</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h3" sx={{ fontWeight: 700, textTransform: 'capitalize' }}>
+              <Typography variant="h3" sx={{ fontWeight: 300, textTransform: 'capitalize' }}>
                 {subInfo?.plan || 'Free'}
               </Typography>
               {subInfo?.status === 'active' && (

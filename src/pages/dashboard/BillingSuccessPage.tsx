@@ -34,7 +34,17 @@ export default function BillingSuccessPage() {
         ) : (
           <Box sx={{ animation: 'fadeIn 0.5s ease-in' }}>
             <CheckCircleIcon sx={{ fontSize: 80, color: 'success.main', mb: 3 }} />
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
+            <Typography
+              variant="h2"
+              component="h1"
+              sx={{
+                fontWeight: 300,
+                color: 'text.primary',
+                mb: 2,
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                lineHeight: 1.2
+              }}
+            >
               Payment Successful!
             </Typography>
             <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>

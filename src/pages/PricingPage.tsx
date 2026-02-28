@@ -89,7 +89,17 @@ export default function PricingPage() {
     <Box sx={{ py: 8 }}>
       <Container maxWidth="xl">
         <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 800 }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{
+              fontWeight: 300,
+              color: 'text.primary',
+              mb: 2,
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              lineHeight: 1.2
+            }}
+          >
             Simple, Transparent Pricing
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
@@ -101,7 +111,7 @@ export default function PricingPage() {
         <Paper elevation={0} sx={{ p: 6, mb: 10, bgcolor: 'grey.50', borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center">
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
+              <Typography variant="h4" gutterBottom sx={{ fontWeight: 300 }}>
                 One-Time Purchase
               </Typography>
               <Typography variant="body1" color="text.secondary" paragraph sx={{ fontSize: '1.1rem' }}>
@@ -121,7 +131,7 @@ export default function PricingPage() {
 
         {/* Section 2: Subscriptions */}
         <Box>
-          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700, textAlign: 'center', mb: 6 }}>
+          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 300, textAlign: 'center', mb: 6 }}>
             Subscription Plans
           </Typography>
           
