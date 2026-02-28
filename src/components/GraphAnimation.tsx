@@ -31,23 +31,23 @@ interface EdgeData {
 }
 
 const initialNodes: NodeData[] = [
-  { id: 'db', label: 'Dataset', icon: 'Database', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 0, opacity: 0, radius: 45 },
-  { id: 'meta', label: 'Metadata', icon: 'Code', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 300, opacity: 0, radius: 40 },
-  { id: 'shop', label: 'Store', icon: 'Storefront', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 600, opacity: 0, radius: 45 },
-  { id: 'api', label: 'API', icon: 'Api', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 900, opacity: 0, radius: 40 },
-  { id: 'apple', label: 'Produce', icon: 'LocalGroceryStore', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1200, opacity: 0, radius: 35 },
-  { id: 'milk', label: 'Dairy', icon: 'Inventory', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1500, opacity: 0, radius: 35 },
-  { id: 'price', label: 'Pricing', icon: 'Sell', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1800, opacity: 0, radius: 35 },
+  { id: 'db', label: 'Dataset', icon: 'Database', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 0, opacity: 0, radius: 45, offsetX: -100, offsetY: 0 },
+  { id: 'meta', label: 'Metadata', icon: 'Code', x: 0, y: 0, vx: 0, vy: 0, mass: 2, spawnDelay: 300, opacity: 0, radius: 40, offsetX: -240, offsetY: -130 },
+  { id: 'shop', label: 'Store', icon: 'Storefront', x: 0, y: 0, vx: 0, vy: 0, mass: 2, spawnDelay: 600, opacity: 0, radius: 45, offsetX: 120, offsetY: 0 },
+  { id: 'api', label: 'API', icon: 'Api', x: 0, y: 0, vx: 0, vy: 0, mass: 1.5, spawnDelay: 900, opacity: 0, radius: 40, offsetX: -240, offsetY: 130 },
+  { id: 'apple', label: 'Produce', icon: 'LocalGroceryStore', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1200, opacity: 0, radius: 35, offsetX: 240, offsetY: -160 },
+  { id: 'milk', label: 'Dairy', icon: 'Inventory', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1500, opacity: 0, radius: 35, offsetX: 0, offsetY: -200 },
+  { id: 'price', label: 'Pricing', icon: 'Sell', x: 0, y: 0, vx: 0, vy: 0, mass: 1, spawnDelay: 1800, opacity: 0, radius: 35, offsetX: 240, offsetY: 160 },
 ];
 
 const edges: EdgeData[] = [
-  { source: 'db', target: 'shop', length: 270 },
+  { source: 'db', target: 'shop', length: 170 },
   { source: 'db', target: 'meta', length: 210 },
-  { source: 'db', target: 'api', length: 240 },
-  { source: 'shop', target: 'apple', length: 195 },
-  { source: 'shop', target: 'milk', length: 195 },
-  { source: 'shop', target: 'price', length: 210 },
-  { source: 'meta', target: 'api', length: 225 },
+  { source: 'db', target: 'api', length: 210 },
+  { source: 'shop', target: 'apple', length: 100 },
+  { source: 'shop', target: 'milk', length: 100 },
+  { source: 'shop', target: 'price', length: 100 },
+  { source: 'meta', target: 'api', length: 150 },
 ];
 
 export default function GraphAnimation() {
@@ -62,8 +62,8 @@ export default function GraphAnimation() {
 
     const nodes = initialNodes.map(n => ({
       ...n,
-      x: width / 2 + n.offsetX,
-      y: height / 2 + n.offsetY,
+      x: width / 2 + n.offsetX + 20,
+      y: height / 2 + n.offsetY + 20,
     }));
 
     const mouse = { x: null as number | null, y: null as number | null };
@@ -95,10 +95,10 @@ export default function GraphAnimation() {
     const startTime = performance.now();
 
     const friction = 0.88; // Slightly less friction for more fluid movement
-    const centerGravity = 0.003; // Weaker pull to center
+    const centerGravity = 0.02; // Stronger pull toward individual target offsets
     const springTension = 0.015; // Much weaker attraction between nodes
-    const nodeRepulsion = 8000; // Stronger repulsion to keep them apart
-    const cursorRepulsion = 15000; // Strong anti-gravity force
+    const nodeRepulsion = 2000; // Stronger repulsion to keep them apart
+    const cursorRepulsion = 8000; // Strong anti-gravity force
 
     const tick = (timestamp: number) => {
       const centerX = width / 2;
@@ -110,9 +110,11 @@ export default function GraphAnimation() {
           n.opacity = Math.min(1, n.opacity + 0.05);
         }
         if (n.opacity > 0) {
-          // slight gravity toward center
-          n.vx += (centerX - n.x) * centerGravity;
-          n.vy += (centerY - n.y) * centerGravity;
+          // gravity toward target position
+          const targetX = centerX + n.offsetX;
+          const targetY = centerY + n.offsetY;
+          n.vx += (targetX - n.x) * centerGravity;
+          n.vy += (targetY - n.y) * centerGravity;
         }
       });
 
@@ -185,11 +187,12 @@ export default function GraphAnimation() {
         n.x += n.vx;
         n.y += n.vy;
 
-        // Keep within bounds roughly
-        if (n.x < n.radius) { n.x = n.radius; n.vx *= -0.5; }
-        if (n.x > width - n.radius) { n.x = width - n.radius; n.vx *= -0.5; }
-        if (n.y < n.radius) { n.y = n.radius; n.vy *= -0.5; }
-        if (n.y > height - n.radius) { n.y = height - n.radius; n.vy *= -0.5; }
+        // Keep within bounds strictly, with an extra 20px padding explicitly
+        const padding = 50;
+        if (n.x < n.radius + padding) { n.x = n.radius + padding; n.vx *= -0.5; }
+        if (n.x > width - n.radius - padding) { n.x = width - n.radius - padding; n.vx *= -0.5; }
+        if (n.y < n.radius + padding) { n.y = n.radius + padding; n.vy *= -0.5; }
+        if (n.y > height - n.radius - padding) { n.y = height - n.radius - padding; n.vy *= -0.5; }
 
         const el = nodesRef.current[n.id];
         if (el) {
