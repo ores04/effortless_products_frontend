@@ -30,6 +30,18 @@ export interface ListDatasetsResponse {
 }
 
 export const datasetService = {
+    getPublicDatasets: async (): Promise<Dataset[]> => {
+        const response = await fetch(endpoints.datasets, {
+            headers: defaultHeaders,
+        });
+        if (!response.ok) throw new Error('Failed to fetch public datasets');
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            return data;
+        }
+        return (data as any).datasets || [];
+    },
+
     listDatasets: async (token: string): Promise<Dataset[]> => {
         const response = await fetch(endpoints.datasets, {
             headers: {

@@ -7,6 +7,7 @@ import DocsPage from './pages/DocsPage';
 import CalendarPage from './pages/CalendarPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PublicDatasetsPage from './pages/PublicDatasetsPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ApiKeysPage from './pages/dashboard/ApiKeysPage';
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+      {
+        path: 'datasets',
+        element: <PublicDatasetsPage />,
       },
     ],
   },

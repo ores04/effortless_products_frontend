@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Container, Stack, Typography, Paper, Button, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import PricingCard from '../components/PricingCard';
 import { billingService } from '../services/billingService';
 import { useAuth } from '../context/AuthContext';
@@ -21,6 +21,7 @@ const tiers = [
     price: '€29',
     features: [
       '1 free dataset unlock per month',
+      'Continuous updates of unlocked datasets',
       '250 requests per endpoint per day',
       '1,500 requests per endpoint per month',
       'Pay as you go for overages',
@@ -33,6 +34,7 @@ const tiers = [
     price: '€89',
     features: [
       '5 free dataset unlocks per month',
+      'Continuous updates of unlocked datasets',
       '1,000 API requests per day',
       '10,000 requests per month',
       'Pay as you go for overages',
@@ -122,7 +124,7 @@ export default function PricingPage() {
               </Typography>
             </Box>
             <Box sx={{ width: { xs: '100%', md: 'auto' }, textAlign: { xs: 'left', md: 'right' } }}>
-              <Button variant="outlined" size="large" sx={{ px: 4, py: 1.5, borderRadius: 2 }}>
+              <Button component={RouterLink} to="/datasets" variant="outlined" size="large" sx={{ px: 4, py: 1.5, borderRadius: 2 }}>
                 Browse Catalog
               </Button>
             </Box>

@@ -144,7 +144,7 @@ export default function BillingPage() {
               <Typography variant="h6" gutterBottom>Pro Plan</Typography>
               <Typography variant="h4" sx={{ mb: 2 }}>€89<Typography component="span" color="text.secondary">/mo</Typography></Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                5 free dataset unlocks per month, 1,000 API requests per day.
+                5 free dataset unlocks per month, Continuous updates of unlocked datasets, 1,000 API requests per day.
               </Typography>
             </CardContent>
             <Box sx={{ p: 2, pt: 0 }}>

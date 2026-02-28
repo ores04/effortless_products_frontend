@@ -1,13 +1,14 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import GraphAnimation from './GraphAnimation';
 
 export default function Hero() {
   return (
-    <Box sx={{ bgcolor: 'background.default', py: { xs: 8, md: 12 } }}>
+    <Box sx={{ bgcolor: 'background.default', py: { xs: 8, md: 12 }, overflow: 'hidden' }}>
       <Container maxWidth="xl">
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={8} alignItems="center">
           {/* Text Content */}
-          <Box sx={{ flex: 1, textAlign: 'left' }}>
+          <Box sx={{ flex: 1, textAlign: 'left', zIndex: 2 }}>
             <Typography
               variant="h2"
               component="h1"
@@ -31,7 +32,7 @@ export default function Hero() {
             </Typography>
             <Button
               component={RouterLink}
-              to="/pricing"
+              to="/datasets"
               variant="contained"
               size="large"
               sx={{
@@ -46,23 +47,15 @@ export default function Hero() {
             </Button>
           </Box>
 
-          {/* Image Placeholder */}
-          <Box sx={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <Box
-              sx={{
-                width: '100%',
-                maxWidth: 600,
-                aspectRatio: '4/3',
-                bgcolor: 'grey.200',
-                borderRadius: 4,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Typography variant="body1" color="text.secondary">
-                Hero Image Placeholder
-              </Typography>
+          {/* Graph Animation */}
+          <Box sx={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <Box sx={{
+              position: 'absolute', width: '120%', height: '120%', bgcolor: 'primary.50',
+              borderRadius: '50%', top: '-10%', right: '-20%', filter: 'blur(60px)', opacity: 0.6, zIndex: 0
+            }} />
+            
+            <Box sx={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 700 }}>
+              <GraphAnimation />
             </Box>
           </Box>
         </Stack>
