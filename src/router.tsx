@@ -8,6 +8,8 @@ import CalendarPage from './pages/CalendarPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PublicDatasetsPage from './pages/PublicDatasetsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ApiKeysPage from './pages/dashboard/ApiKeysPage';
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
       {
         path: 'datasets',
         element: <PublicDatasetsPage />,
+      },
+      {
+        path: 'terms',
+        element: <TermsPage />,
+      },
+      {
+        path: 'privacy',
+        element: <PrivacyPage />,
       },
     ],
   },

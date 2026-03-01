@@ -1,56 +1,68 @@
-import { Box, Container, Typography } from '@mui/material';
-import { useEffect, useRef } from 'react';
+import { Box, Container, Typography, CircularProgress } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import DatasetCard from './DatasetCard';
+import { datasetService } from '../services/datasetService';
 
-const datasets = [
-  {
-    title: 'Edeka Product Catalog',
-    description: 'Comprehensive product list with current shelf prices from major Edeka branches.',
-    price: '€199',
-    color: '#FFF9C4', // Pastel Yellow (Edeka has yellow/blue)
-    link: '/pricing',
-  },
-  {
-    title: 'Netto Marken-Discount',
-    description: 'Full assortment pricing history for Netto stores across Germany.',
-    price: '€149',
-    color: '#FFCCBC', // Pastel Orange (Netto is yellow/red, close enough)
-    link: '/pricing',
-  },
-  {
-    title: 'Lidl Weekly Offers',
-    description: 'Track price changes and special weekly offers from Lidl stores.',
-    price: '€149',
-    color: '#BBDEFB', // Pastel Blue (Lidl is blue/yellow/red)
-    link: '/pricing',
-  },
-  {
-    title: 'Aldi Nord & Süd',
-    description: 'Combined dataset for Aldi Nord and Süd product pricing and availability.',
-    price: '€179',
-    color: '#E1BEE7', // Pastel Purple
-    link: '/pricing',
-  },
-  {
-    title: 'Rewe Market Data',
-    description: 'Detailed shelf pricing and product availability for Rewe supermarkets.',
-    price: '€199',
-    color: '#C8E6C9', // Pastel Green (Rewe is red/white, but green implies fresh/market)
-    link: '/pricing',
-  },
+interface HighlightItem {
+  title: string;
+  description: string;
+  price: string;
+  color: string;
+  link: string;
+}
+
+const pastelColors = [
+  '#E3F2FD', '#F3E5F5', '#E8F5E9', '#FFF3E0', 
+  '#FFEBEE', '#E0F7FA', '#FCE4EC', '#F4F4F5'
 ];
 
 export default function HighlightDatasets() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [datasets, setDatasets] = useState<HighlightItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchHighlights = async () => {
+      try {
+        const publicDs = await datasetService.getPublicDatasets();
+        
+        // Randomly select up to 7 datasets
+        const shuffled = [...publicDs].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 7);
+
+        const mapped = selected.map(ds => {
+          const hash = ds.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          const color = pastelColors[hash % pastelColors.length];
+          return {
+            title: ds.name,
+            description: ds.description || 'No description available',
+            price: 'Sign in to unlock',
+            color,
+            link: '/datasets',
+          };
+        });
+
+        setDatasets(mapped);
+      } catch (err) {
+        console.error('Failed to load highlighted datasets', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchHighlights();
+  }, []);
+
+  useEffect(() => {
+    if (datasets.length === 0) return;
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
     const scrollAmount = 320 + 24; // Card max-width + gap
 
     const interval = setInterval(() => {
-      if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+      // Check if we hit the end, add a buffer to reset gracefully
+      if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 10) {
         scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
         scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
@@ -58,7 +70,7 @@ export default function HighlightDatasets() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [datasets]);
 
   return (
     <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
@@ -67,26 +79,34 @@ export default function HighlightDatasets() {
           Highlight Datasets
         </Typography>
         
-        <Box 
-          ref={scrollRef}
-          sx={{ 
-            display: 'flex', 
-            gap: 3, 
-            overflowX: 'auto', 
-            pb: 2,
-            mx: -2,
-            px: 2,
-            alignItems: 'stretch', // Ensure equal height
-            '&::-webkit-scrollbar': { display: 'none' }, // Hide scrollbar for Chrome/Safari
-            msOverflowStyle: 'none', // Hide scrollbar for IE/Edge
-            scrollbarWidth: 'none', // Hide scrollbar for Firefox
-            scrollBehavior: 'smooth',
-          }}
-        >
-          {datasets.map((dataset) => (
-            <DatasetCard key={dataset.title} {...dataset} />
-          ))}
-        </Box>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : datasets.length === 0 ? (
+           <Typography color="text.secondary">No datasets currently available to highlight.</Typography>
+        ) : (
+          <Box 
+            ref={scrollRef}
+            sx={{ 
+              display: 'flex', 
+              gap: 3, 
+              overflowX: 'auto', 
+              pb: 2,
+              mx: -2,
+              px: 2,
+              alignItems: 'stretch', // Ensure equal height
+              '&::-webkit-scrollbar': { display: 'none' }, // Hide scrollbar for Chrome/Safari
+              msOverflowStyle: 'none', // Hide scrollbar for IE/Edge
+              scrollbarWidth: 'none', // Hide scrollbar for Firefox
+              scrollBehavior: 'smooth',
+            }}
+          >
+            {datasets.map((dataset, idx) => (
+              <DatasetCard key={`${dataset.title}-${idx}`} {...dataset} />
+            ))}
+          </Box>
+        )}
       </Container>
     </Box>
   );

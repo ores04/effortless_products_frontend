@@ -1,4 +1,5 @@
-import { Box, Container, Stack, Typography } from '@mui/material';
+import { Box, Container, Stack, Typography, Link as MuiLink } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -23,6 +24,18 @@ export default function Footer() {
             </Typography>
           </Box>
 
+          {/* Legal Links */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'flex-start', md: 'flex-end' } }}>
+            <Typography variant="h6" color="primary" gutterBottom sx={{ fontWeight: 300, fontSize: '0.9rem', mb: 0.5 }}>
+              Legal
+            </Typography>
+            <MuiLink component={RouterLink} to="/terms" color="text.secondary" variant="body2" sx={{ mb: 1, textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>
+              Terms of Service (AGB)
+            </MuiLink>
+            <MuiLink component={RouterLink} to="/privacy" color="text.secondary" variant="body2" sx={{ textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>
+              Privacy Policy (Datenschutz)
+            </MuiLink>
+          </Box>
         </Stack>
       </Container>
     </Box>

@@ -32,6 +32,7 @@ export default function VideoUploadPage() {
   const { user, token, supabase } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [datasetName, setDatasetName] = useState('');
+  const [datasetId, setDatasetId] = useState('');
   const [description, setDescription] = useState('');
   const [storeId, setStoreId] = useState('');
   const [stores, setStores] = useState<any[]>([]);
@@ -173,7 +174,8 @@ export default function VideoUploadPage() {
           owner_id: user.id,
           store_id: storeId,
           dataset_name: datasetName,
-          description: description
+          description: description,
+          ...(datasetId ? { dataset_id: datasetId } : {})
         })
       });
       
@@ -185,6 +187,7 @@ export default function VideoUploadPage() {
       setSuccess('Video uploaded and processing started successfully!');
       setFile(null);
       setDatasetName('');
+      setDatasetId('');
       setDescription('');
     } catch (err: any) {
       setError(err.message || 'An error occurred during upload.');
@@ -284,6 +287,15 @@ export default function VideoUploadPage() {
               size="small"
               value={datasetName}
               onChange={(e) => setDatasetName(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            
+            <TextField
+              fullWidth
+              label="Dataset ID (Optional, overrides selected stores)"
+              size="small"
+              value={datasetId}
+              onChange={(e) => setDatasetId(e.target.value)}
               sx={{ mb: 3 }}
             />
             

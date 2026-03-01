@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Alert, Link as MuiLink } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Alert, Link as MuiLink, FormControlLabel, Checkbox } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,16 +7,32 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agbAccepted, setAgbAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [agbError, setAgbError] = useState('');
+  const [privacyError, setPrivacyError] = useState('');
   const { register, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
+    setAgbError('');
+    setPrivacyError('');
     
     if (password !== confirmPassword) {
         setPasswordError('Passwords do not match');
+        return;
+    }
+
+    if (!agbAccepted) {
+        setAgbError('You must accept the terms of service (AGB) to register.');
+        return;
+    }
+
+    if (!privacyAccepted) {
+        setPrivacyError('You must accept the privacy policy (Datenschutz) to register.');
         return;
     }
 
@@ -83,7 +99,27 @@ export default function RegisterPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          <FormControlLabel
+            control={<Checkbox checked={agbAccepted} onChange={(e) => setAgbAccepted(e.target.checked)} color="primary" />}
+            label={
+              <Typography variant="body2" color="text.secondary">
+                I have read and agree to the <MuiLink component={RouterLink} to="/terms" target="_blank" rel="noopener">Terms of Service (AGB)</MuiLink>, including data usage limits.
+              </Typography>
+            }
+            sx={{ mt: 2 }}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={privacyAccepted} onChange={(e) => setPrivacyAccepted(e.target.checked)} color="primary" />}
+            label={
+              <Typography variant="body2" color="text.secondary">
+                I have read and agree to the <MuiLink component={RouterLink} to="/privacy" target="_blank" rel="noopener">Privacy Policy (Datenschutz)</MuiLink>.
+              </Typography>
+            }
+            sx={{ mt: 1 }}
+          />
           {passwordError && <Alert severity="error" sx={{ mt: 2 }}>{passwordError}</Alert>}
+          {agbError && <Alert severity="error" sx={{ mt: 2 }}>{agbError}</Alert>}
+          {privacyError && <Alert severity="error" sx={{ mt: 2 }}>{privacyError}</Alert>}
           {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
           <Button
             type="submit"
