@@ -37,8 +37,8 @@ export default function BillingPage() {
     try {
       // If user has an active plan (not free), send them to the Stripe Customer Portal
       if (subInfo?.status === 'active' && subInfo?.plan !== 'free') {
-        const { checkout_url } = await billingService.createPortalSession(token);
-        window.location.href = checkout_url;
+        const { portal_url } = await billingService.createPortalSession(token);
+        window.location.href = portal_url;
         return;
       }
       

@@ -14,7 +14,6 @@ import ApiKeysPage from './pages/dashboard/ApiKeysPage';
 import BillingPage from './pages/dashboard/BillingPage';
 import BillingSuccessPage from './pages/dashboard/BillingSuccessPage';
 import DatasetsPage from './pages/dashboard/DatasetsPage';
-import EndpointsPage from './pages/dashboard/EndpointsPage';
 import VideoUploadPage from './pages/dashboard/VideoUploadPage';
 
 const router = createBrowserRouter([
@@ -81,8 +80,8 @@ const router = createBrowserRouter([
         element: <DatasetsPage />,
       },
       {
-        path: 'endpoints',
-        element: <EndpointsPage />,
+        path: 'docs',
+        element: <DocsPage />,
       },
       {
         path: 'video-upload',

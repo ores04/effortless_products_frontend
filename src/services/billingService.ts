@@ -9,6 +9,10 @@ export interface CheckoutResponse {
     checkout_url: string;
 }
 
+export interface PortalResponse {
+    portal_url: string;
+}
+
 export const billingService = {
     /**
      * Fetch current billing information (subscription status and plan)
@@ -78,7 +82,7 @@ export const billingService = {
     /**
      * Create a Stripe Customer Portal session for managing subscriptions
      */
-    async createPortalSession(token: string): Promise<CheckoutResponse> {
+    async createPortalSession(token: string): Promise<PortalResponse> {
         const response = await fetch(endpoints.billingPortal, {
             method: 'POST',
             headers: {

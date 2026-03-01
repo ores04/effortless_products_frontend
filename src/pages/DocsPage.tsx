@@ -4,13 +4,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import { API_BASE_URL } from '../services/api';
 
 const navItems = [
   { id: 'quickstart', label: 'Quickstart' },
   { id: 'authentication', label: 'Authentication' },
   { id: 'data-model', label: 'Data Model' },
   { id: 'rate-limits', label: 'Rate Limits' },
-  { id: 'products', label: 'Products API' },
+  { id: 'api-reference', label: 'API Reference' },
 ];
 
 const contentMap: Record<string, string> = {
@@ -210,12 +211,24 @@ export default function DocsPage() {
             '& th': { bgcolor: 'grey.50' }
           }}
         >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-          >
-            {contentMap[activeSection]}
-          </ReactMarkdown>
+          {activeSection === 'api-reference' ? (
+            <Box sx={{ width: '100%', height: 'calc(100vh - 160px)', borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
+              <iframe
+                src={`${API_BASE_URL}/docs/enduser`}
+                width="100%"
+                height="100%"
+                style={{ border: 'none', backgroundColor: '#fff' }}
+                title="API Reference"
+              />
+            </Box>
+          ) : (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeHighlight]}
+            >
+              {contentMap[activeSection]}
+            </ReactMarkdown>
+          )}
         </Box>
       </Box>
     </Box>

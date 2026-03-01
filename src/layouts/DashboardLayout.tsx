@@ -24,7 +24,7 @@ const menuGroups = [
     title: 'Management',
     items: [
       { text: 'Datasets', icon: <StorageIcon />, path: '/dashboard/datasets' },
-      { text: 'Endpoints', icon: <ApiIcon />, path: '/dashboard/endpoints' },
+      { text: 'Docs', icon: <ApiIcon />, path: '/dashboard/docs' },
     ]
   },
   {
