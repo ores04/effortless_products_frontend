@@ -27,7 +27,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../context/AuthContext';
 import { apiKeyService, type ApiKey } from '../../services/apiKeyService';
-import { billingService } from '../../services/billingService';
+import { authService } from '../../services/authService';
 
 export default function ApiKeysPage() {
   const { token } = useAuth();
@@ -52,12 +52,12 @@ export default function ApiKeysPage() {
     if (!token) return;
     setLoading(true);
     try {
-      const [data, billingData] = await Promise.all([
+      const [data, profileData] = await Promise.all([
         apiKeyService.listKeys(token),
-        billingService.getBillingInfo(token).catch(() => ({ plan: 'free' })) // Fallback to free on error
+        authService.getProfile(token).catch(() => ({ status: 'free' })) // Fallback to free on error
       ]);
       setKeys(data);
-      setUserPlan(billingData?.plan || 'free');
+      setUserPlan(profileData?.status || 'free');
     } catch (err) {
       setError('Failed to load API keys');
       console.error(err);

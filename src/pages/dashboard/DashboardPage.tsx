@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { usageService, type UsageSummary, type UsageByKeyResponse } from '../../services/usageService';
 import { apiKeyService, type ApiKey } from '../../services/apiKeyService';
+import { authService, type UserProfile } from '../../services/authService';
 
 export default function DashboardPage() {
   const { token } = useAuth();
@@ -33,6 +34,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<UsageSummary | null>(null);
   const [keysUsage, setKeysUsage] = useState<UsageByKeyResponse | null>(null);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,14 +43,16 @@ export default function DashboardPage() {
       if (!token) return;
       setLoading(true);
       try {
-        const [summaryData, keysData, apiKeysData] = await Promise.all([
+        const [summaryData, keysData, apiKeysData, profileData] = await Promise.all([
           usageService.getSummary(token),
           usageService.getKeysUsage(token),
-          apiKeyService.listKeys(token)
+          apiKeyService.listKeys(token),
+          authService.getProfile(token)
         ]);
         setSummary(summaryData);
         setKeysUsage(keysData);
         setApiKeys(apiKeysData);
+        setProfile(profileData);
       } catch (err) {
         console.error(err);
         setError('Failed to load dashboard data');
@@ -142,6 +146,30 @@ export default function DashboardPage() {
                 <Typography variant="h3" sx={{ fontWeight: 300 }}>
                 {(summary?.error_rate || 0 * 100).toFixed(1)}%
               </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card 
+            elevation={0} 
+            sx={{ 
+              bgcolor: 'background.paper', 
+              color: 'text.primary', 
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              height: '100%'
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>Subscription Tier</Typography>
+               <Typography variant="h3" sx={{ fontWeight: 300, textTransform: 'capitalize' }}>
+                {profile?.status || 'Free'}
+               </Typography>
+               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {profile?.email}
+               </Typography>
             </CardContent>
           </Card>
         </Grid>

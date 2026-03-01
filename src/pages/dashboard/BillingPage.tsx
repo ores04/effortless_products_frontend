@@ -3,6 +3,7 @@ import { Typography, Box, Paper, CircularProgress, Alert, Button, Grid, Card, Ca
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useAuth } from '../../context/AuthContext';
 import { billingService, type SubscriptionInfo } from '../../services/billingService';
+import { authService } from '../../services/authService';
 
 export default function BillingPage() {
   const { token } = useAuth();
@@ -15,8 +16,11 @@ export default function BillingPage() {
     const fetchBilling = async () => {
       if (!token) return;
       try {
-        const info = await billingService.getBillingInfo(token);
-        setSubInfo(info);
+        const info = await authService.getProfile(token);
+        setSubInfo({
+          plan: info.status || 'free',
+          status: ['tryout', 'go', 'pro'].includes(info.status || '') ? 'active' : 'inactive'
+        });
       } catch (err: any) {
         setError(err.message || 'Failed to open billing details');
       } finally {
@@ -31,10 +35,18 @@ export default function BillingPage() {
     setActionLoading(plan);
     setError(null);
     try {
+      // If user has an active plan (not free), send them to the Stripe Customer Portal
+      if (subInfo?.status === 'active' && subInfo?.plan !== 'free') {
+        const { checkout_url } = await billingService.createPortalSession(token);
+        window.location.href = checkout_url;
+        return;
+      }
+      
+      // Otherwise, start a new checkout session for the selected plan
       const { checkout_url } = await billingService.createSubscriptionCheckout(plan, token);
       window.location.href = checkout_url;
     } catch (err: any) {
-      setError(err.message || 'Failed to start checkout process');
+      setError(err.message || 'Failed to start checkout or portal process');
       setActionLoading(null);
     }
   };
@@ -107,7 +119,7 @@ export default function BillingPage() {
                 onClick={() => handleCheckout('tryout')}
                 disabled={actionLoading !== null || subInfo?.plan === 'tryout'}
               >
-                {actionLoading === 'tryout' ? 'Loading...' : subInfo?.plan === 'tryout' ? 'Current Plan' : 'Subscribe to Tryout'}
+                {actionLoading === 'tryout' ? 'Loading...' : subInfo?.plan === 'tryout' ? 'Current Plan' : subInfo?.plan === 'go' || subInfo?.plan === 'pro' ? 'Downgrade to Tryout' : 'Subscribe to Tryout'}
               </Button>
             </Box>
           </Card>
@@ -131,7 +143,7 @@ export default function BillingPage() {
                 onClick={() => handleCheckout('go')}
                 disabled={actionLoading !== null || subInfo?.plan === 'go'}
               >
-                {actionLoading === 'go' ? 'Loading...' : subInfo?.plan === 'go' ? 'Current Plan' : 'Subscribe to Go'}
+                {actionLoading === 'go' ? 'Loading...' : subInfo?.plan === 'go' ? 'Current Plan' : subInfo?.plan === 'pro' ? 'Downgrade to Go' : 'Upgrade to Go'}
               </Button>
             </Box>
           </Card>
@@ -154,7 +166,7 @@ export default function BillingPage() {
                 onClick={() => handleCheckout('pro')}
                 disabled={actionLoading !== null || subInfo?.plan === 'pro'}
               >
-                {actionLoading === 'pro' ? 'Loading...' : subInfo?.plan === 'pro' ? 'Current Plan' : 'Subscribe to Pro'}
+                {actionLoading === 'pro' ? 'Loading...' : subInfo?.plan === 'pro' ? 'Current Plan' : 'Upgrade to Pro'}
               </Button>
             </Box>
           </Card>
@@ -182,6 +194,19 @@ export default function BillingPage() {
           </Card>
         </Grid>
       </Grid>
+      
+      {subInfo?.status === 'active' && subInfo?.plan !== 'free' && (
+        <Box sx={{ mt: 6, display: 'flex', justifyContent: 'center' }}>
+          <Button 
+            color="error" 
+            variant="text" 
+            onClick={() => handleCheckout('cancel')}
+            disabled={actionLoading !== null}
+          >
+            Cancel Subscription
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }

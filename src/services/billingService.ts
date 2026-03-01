@@ -73,5 +73,25 @@ export const billingService = {
         }
 
         return response.json();
+    },
+
+    /**
+     * Create a Stripe Customer Portal session for managing subscriptions
+     */
+    async createPortalSession(token: string): Promise<CheckoutResponse> {
+        const response = await fetch(endpoints.billingPortal, {
+            method: 'POST',
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || 'Failed to open billing portal');
+        }
+
+        return response.json();
     }
 };

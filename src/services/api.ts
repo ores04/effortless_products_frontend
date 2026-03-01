@@ -16,6 +16,7 @@ export const SIDECAR_BASE_URL = import.meta.env.VITE_SIDECAR_URL || API_BASE_URL
 
 export const endpoints = {
     // auth do not have a version
+    profile: `${API_BASE_URL}${API_PREFIX}/auth/profile`,
     login: `${API_BASE_URL}${API_PREFIX}/auth/login`,
     register: `${API_BASE_URL}${API_PREFIX}/auth/register`,
     logout: `${API_BASE_URL}${API_PREFIX}/auth/logout`,
