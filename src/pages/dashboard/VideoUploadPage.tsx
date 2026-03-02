@@ -84,13 +84,37 @@ export default function VideoUploadPage() {
     checkServers();
   }, []);
 
-  // Fetch stores (mocked, as the API is currently unused)
+  // Fetch stores from API
   useEffect(() => {
-    // Provide a default mock store to avoid validation errors
-    const mockStoreId = '11111111-0000-0000-0000-000000000001';
-    setStores([{ id: mockStoreId, name: 'Default Store (Unused)' }]);
-    setStoreId(mockStoreId);
-  }, []);
+    let mounted = true;
+    const fetchStores = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(endpoints.stores, {
+          headers: {
+            ...defaultHeaders,
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const storesList = Array.isArray(data) ? data : (data.stores || []);
+          if (mounted) {
+            setStores(storesList);
+            if (storesList.length > 0) {
+              setStoreId(prev => prev || storesList[0].id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch stores:', err);
+      }
+    };
+    fetchStores();
+    return () => {
+      mounted = false;
+    };
+  }, [token]);
 
   // Fetch tasks
   const fetchTasks = async () => {
@@ -275,9 +299,16 @@ export default function VideoUploadPage() {
                 onChange={(e) => setStoreId(e.target.value)}
               >
                 {stores.length === 0 && <MenuItem value="" disabled>Loading stores...</MenuItem>}
-                {stores.map((store) => (
-                  <MenuItem key={store.id} value={store.id}>{store.name}</MenuItem>
-                ))}
+                {stores.map((store) => {
+                  const displayName = store.chain_name 
+                    ? `${store.chain_name} - ${store.store_name}` 
+                    : (store.store_name || store.name || 'Unnamed Store');
+                  return (
+                    <MenuItem key={store.id} value={store.id}>
+                      {displayName}
+                    </MenuItem>
+                  );
+                })}
               </Select>
             </FormControl>
 
