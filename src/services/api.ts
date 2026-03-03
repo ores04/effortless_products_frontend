@@ -46,7 +46,7 @@ export const endpoints = {
     // products (v1)
     products: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/products`,
     datasetProducts: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`, // + /:id/products
-    processVideo: `${SIDECAR_BASE_URL}${API_PREFIX}${API_VERSION}/video/process`,
+    processVideo: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/video/process`,
 };
 
 export const defaultHeaders = {
