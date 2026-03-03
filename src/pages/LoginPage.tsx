@@ -14,7 +14,10 @@ export default function LoginPage() {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message && (err.message.toLowerCase().includes('confirm') || err.message.toLowerCase().includes('verif'))) {
+        navigate('/confirm-mail');
+      }
       // Error is handled in context and displayed via error state
     }
   };

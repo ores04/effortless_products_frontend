@@ -10,6 +10,9 @@ import RegisterPage from './pages/RegisterPage';
 import PublicDatasetsPage from './pages/PublicDatasetsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ConfirmMailPage from './pages/ConfirmMailPage';
+import MailConfirmationSuccessPage from './pages/MailConfirmationSuccessPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ApiKeysPage from './pages/dashboard/ApiKeysPage';
@@ -62,6 +65,18 @@ const router = createBrowserRouter([
       {
         path: 'privacy',
         element: <PrivacyPage />,
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: 'confirm-mail',
+        element: <ConfirmMailPage />,
+      },
+      {
+        path: 'mail-confirmation-success',
+        element: <MailConfirmationSuccessPage />,
       },
     ],
   },

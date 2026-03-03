@@ -47,6 +47,10 @@ export const endpoints = {
     products: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/products`,
     datasetProducts: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets`, // + /:id/products
     processVideo: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/video/process`,
+
+    // premium unlocks
+    datasetPremiumUnlockStatus: `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets/premium-unlocked`,
+    datasetPremiumUnlock: (datasetId: string) => `${API_BASE_URL}${API_PREFIX}${API_VERSION}/datasets/${datasetId}/premium-unlocked`,
 };
 
 export const defaultHeaders = {

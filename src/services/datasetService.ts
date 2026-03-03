@@ -29,6 +29,17 @@ export interface ListDatasetsResponse {
     // I'll try to handle the array root.
 }
 
+export interface PremiumUnlockStatus {
+    total_limit: number;
+    used: number;
+    remaining: number;
+}
+
+export interface PremiumUnlockResponse {
+    status: string;
+    message: string;
+}
+
 export const datasetService = {
     getPublicDatasets: async (): Promise<Dataset[]> => {
         const response = await fetch(endpoints.datasets, {
@@ -78,4 +89,33 @@ export const datasetService = {
         if (!response.ok) throw new Error('Failed to fetch dataset details');
         return response.json();
     },
+
+    getPremiumUnlockStatus: async (token: string): Promise<PremiumUnlockStatus> => {
+        const response = await fetch(endpoints.datasetPremiumUnlockStatus, {
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.detail || 'Failed to fetch premium unlock status');
+        }
+        return response.json();
+    },
+
+    unlockWithPremiumSlot: async (token: string, datasetId: string): Promise<PremiumUnlockResponse> => {
+        const response = await fetch(endpoints.datasetPremiumUnlock(datasetId), {
+            method: 'POST',
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.detail || 'Failed to unlock dataset with premium slot');
+        }
+        return response.json();
+    }
 };

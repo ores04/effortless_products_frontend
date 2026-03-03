@@ -22,7 +22,7 @@ import {
 import StorageIcon from '@mui/icons-material/StorageOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useAuth } from '../../context/AuthContext';
-import { datasetService, type Dataset } from '../../services/datasetService';
+import { datasetService, type Dataset, type PremiumUnlockStatus } from '../../services/datasetService';
 import { billingService } from '../../services/billingService';
 
 export default function DatasetsPage() {
@@ -38,6 +38,12 @@ export default function DatasetsPage() {
   
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+
+  // Premium Unlock Modal State
+  const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+  const [selectedDatasetForUnlock, setSelectedDatasetForUnlock] = useState<Dataset | null>(null);
+  const [unlockStatus, setUnlockStatus] = useState<PremiumUnlockStatus | null>(null);
+  const [premiumUnlockLoading, setPremiumUnlockLoading] = useState(false);
 
   useEffect(() => {
     // Check for Stripe redirect
@@ -69,16 +75,66 @@ export default function DatasetsPage() {
     fetchDatasets();
   }, [token]);
 
-  const handleCheckoutDataset = async (datasetId: string) => {
+  const handleCheckoutDataset = async (dataset: Dataset) => {
     if (!token) return;
-    setCheckoutLoading(datasetId);
+    setCheckoutLoading(dataset.id);
     setError(null);
+    console.log("handleCheckoutDataset", dataset);
     try {
-      const { checkout_url } = await billingService.createDatasetCheckout(datasetId, token);
+      try {
+        const status = await datasetService.getPremiumUnlockStatus(token);
+        if (status.remaining > 0) {
+          setUnlockStatus(status);
+          setSelectedDatasetForUnlock(dataset);
+          setUnlockModalOpen(true);
+          setCheckoutLoading(null);
+          return; // Stop here, wait for modal interaction
+        }
+      } catch (statusErr) {
+        console.error("Failed to fetch premium unlock status, falling back to Stripe checkout", statusErr);
+      }
+      
+      const { checkout_url } = await billingService.createDatasetCheckout(dataset.id, token);
       window.location.href = checkout_url;
     } catch (err: any) {
       setError(err.message || 'Failed to initiate purchase for this dataset.');
       setCheckoutLoading(null);
+    }
+  };
+
+  const handleConfirmPremiumUnlock = async () => {
+    if (!token || !selectedDatasetForUnlock) return;
+    setPremiumUnlockLoading(true);
+    setError(null);
+    try {
+      await datasetService.unlockWithPremiumSlot(token, selectedDatasetForUnlock.id);
+      setSuccessMessage(`Successfully unlocked ${selectedDatasetForUnlock.name}!`);
+      setUnlockModalOpen(false);
+      
+      // Refresh datasets
+      const [data, unlockedData] = await Promise.all([
+          datasetService.listDatasets(token),
+          datasetService.getUnlockedDatasets(token).catch(() => []) 
+      ]);
+      setDatasets(data);
+      setUnlockedDatasets(unlockedData);
+    } catch (err: any) {
+      setError(err.message || 'Failed to unlock dataset with premium slot.');
+    } finally {
+      setPremiumUnlockLoading(false);
+    }
+  };
+
+  const handlePayWithCard = async () => {
+    if (!token || !selectedDatasetForUnlock) return;
+    setPremiumUnlockLoading(true);
+    setError(null);
+    try {
+        const { checkout_url } = await billingService.createDatasetCheckout(selectedDatasetForUnlock.id, token);
+        window.location.href = checkout_url;
+    } catch (err: any) {
+        setError(err.message || 'Failed to initiate purchase for this dataset.');
+        setPremiumUnlockLoading(false);
     }
   };
 
@@ -290,7 +346,7 @@ export default function DatasetsPage() {
                       size="small" 
                       variant="contained" 
                       disableElevation
-                      onClick={() => handleCheckoutDataset(dataset.id)}
+                      onClick={() => handleCheckoutDataset(dataset)}
                       disabled={checkoutLoading === dataset.id || downloadLoading === dataset.id}
                       sx={{ 
                         bgcolor: '#fff', 
@@ -405,6 +461,63 @@ export default function DatasetsPage() {
             <DialogActions sx={{ p: 2 }}>
               <Button onClick={handleCloseInfo} variant="outlined" color="inherit">
                 Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
+      {/* Dataset Unlock Decision Modal */}
+      <Dialog open={unlockModalOpen} onClose={() => setUnlockModalOpen(false)} maxWidth="sm" fullWidth>
+        {selectedDatasetForUnlock && unlockStatus && (
+          <>
+            <DialogTitle sx={{ fontWeight: 300 }}>
+              Unlock Dataset
+            </DialogTitle>
+            <Divider />
+            <DialogContent sx={{ pt: 3 }}>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                You are about to unlock <strong>{selectedDatasetForUnlock.name}</strong>.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                You have {unlockStatus.remaining} out of {unlockStatus.total_limit} premium unlocks remaining this month.
+              </Typography>
+              
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Button 
+                  variant="contained" 
+                  fullWidth 
+                  size="large"
+                  disabled={premiumUnlockLoading}
+                  onClick={handleConfirmPremiumUnlock}
+                  sx={{ 
+                    bgcolor: '#111827', 
+                    color: '#fff',
+                    py: 1.5,
+                    '&:hover': { bgcolor: '#1f2937' }
+                  }}
+                >
+                  {premiumUnlockLoading ? 'Unlocking...' : 'Use Premium Unlock'}
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  fullWidth 
+                  size="large"
+                  disabled={premiumUnlockLoading}
+                  onClick={handlePayWithCard}
+                  sx={{ 
+                    borderColor: 'rgba(0,0,0,0.12)', 
+                    color: '#111827',
+                    py: 1.5,
+                  }}
+                >
+                   {premiumUnlockLoading ? 'Redirecting...' : 'Pay with Card'}
+                </Button>
+              </Box>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
+              <Button onClick={() => setUnlockModalOpen(false)} color="inherit" disabled={premiumUnlockLoading}>
+                Cancel
               </Button>
             </DialogActions>
           </>
