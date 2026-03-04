@@ -168,9 +168,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (receivedToken) {
         setToken(receivedToken);
         localStorage.setItem('authToken', receivedToken);
-      } else {
-          throw new Error('No access token received from server');
       }
+      // If no token is received, it usually means the user needs to confirm their email before logging in.
     } catch (err: any) {
       setError(err.message || 'An error occurred during registration');
       throw err;
